@@ -18,6 +18,7 @@ model Usuario {
   codigoTrabajador    String    @unique
   nombre              String
   correoElectronico   String
+  password            String
   telefono            String
   puesto              String
   rolId               Int
