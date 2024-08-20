@@ -1,0 +1,107 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  id                  Int       @id @default(autoincrement())
+  codigoTrabajador    String    @unique
+  nombre              String
+  correoElectronico   String
+  telefono            String
+  puesto              String
+  rolId               Int
+  rol                 Rol       @relation(fields: [rolId], references: [id])
+  pedidosSolicitados  Pedido[]  @relation("Solicitados")
+  pedidosRepartidos   Pedido[]  @relation("Repartidos")
+
+  @@map("usuarios")
+}
+
+model Rol {
+  id       Int      @id @default(autoincrement())
+  nombre   String   @unique
+  usuarios Usuario[]
+
+  @@map("roles")
+}
+
+model Pedido {
+  id                Int       @id @default(autoincrement())
+  nroPedido         String    @unique
+  fechaPedido       DateTime
+  fechaRecepcion    DateTime?
+  fechaDespacho     DateTime?
+  fechaEntrega      DateTime?
+  vendedorId        Int
+  repartidorId      Int?
+  estadoId          Int
+  vendedor          Usuario   @relation("Solicitados", fields: [vendedorId], references: [id], onUpdate: NoAction, onDelete: NoAction)
+  repartidor        Usuario?  @relation("Repartidos", fields: [repartidorId], references: [id], onUpdate: NoAction, onDelete: NoAction)
+  estado            Estado    @relation(fields: [estadoId], references: [id])
+  productos         PedidoProducto[]
+
+  @@map("pedidos")
+}
+
+model Estado {
+  id       Int      @id @default(autoincrement())
+  nombre   String   @unique
+  pedidos  Pedido[]
+
+  @@map("estados")
+}
+
+model Producto {
+  id            Int      @id @default(autoincrement())
+  sku           String   @unique
+  nombre        String
+  tipo          String
+  precio        Float
+  unidadMedida  String
+  etiquetas     EtiquetaProducto[]
+  pedidos       PedidoProducto[]
+
+  @@map("productos")
+}
+
+model Etiqueta {
+  id        Int                 @id @default(autoincrement())
+  nombre    String              @unique
+  productos EtiquetaProducto[]
+
+  @@map("etiquetas")
+}
+
+model EtiquetaProducto {
+  id          Int      @id @default(autoincrement())
+  productoId  Int
+  etiquetaId  Int
+  producto    Producto @relation(fields: [productoId], references: [id], onDelete: Cascade)
+  etiqueta    Etiqueta @relation(fields: [etiquetaId], references: [id], onDelete: Cascade)
+
+  @@unique([productoId, etiquetaId])
+  @@map("etiquetas_productos")
+}
+
+model PedidoProducto {
+  id          Int      @id @default(autoincrement())
+  pedidoId    Int
+  productoId  Int
+  cantidad    Int
+  pedido      Pedido   @relation(fields: [pedidoId], references: [id], onDelete: Cascade)
+  producto    Producto @relation(fields: [productoId], references: [id], onDelete: Cascade)
+
+  @@unique([pedidoId, productoId])
+  @@map("pedidos_productos")
+}
