@@ -82,3 +82,9 @@
   - Uso de typescript.
 - Se usan ESlint y Prettier que mejoran la consistencia y calidad del código, automatizando el formateo y detectando errores, lo que facilita el mantenimiento y colaboración.
 - Se documentaron los endpoints haciendo uso del estandar Open API con la herramienta Swagger
+
+# Diagrama Entidad Relación
+
+El siguiente diagrama ER muestra la relacion de las entidades relacionadas en la aplicac
+
+![Diagrama ER](https://i.ibb.co/jVRbNFw/imagen-2024-08-21-070031337.png)
