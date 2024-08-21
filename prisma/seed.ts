@@ -1,23 +1,32 @@
 import { PrismaClient } from '@prisma/client';
+import { UserRoles } from '../src/enums/user-roles.enum';
 const prisma = new PrismaClient();
 
-async function main() {
-  const rol = await prisma.rol.findUnique({
-    where: {
-      id: 1,
-    },
-  });
+const roles = [
+  [UserRoles.ENCARGADO, 'Encargado'],
+  [UserRoles.VENDEDOR, 'Vendedor'],
+  [UserRoles.DELIVERY, 'Delivery'],
+  [UserRoles.REPARTIDOR, 'Repartidor'],
+];
 
-  if (rol) return;
-  await prisma.rol.create({
-    data: {
-      nombre: 'Administrador',
-      id: 1,
-    },
-  });
-}
+const seedRoles = async () => {
+  const raw = [
+    'SET IDENTITY_INSERT roles ON',
+    ...roles.map(
+      ([id, nombre]) => `
+        IF NOT EXISTS (SELECT 1 FROM roles WHERE id = ${id})
+        BEGIN
+          INSERT INTO roles (id, nombre)
+          VALUES (${id}, N'${nombre}')
+        END`,
+    ),
+    'SET IDENTITY_INSERT roles OFF',
+  ].join('\n');
 
-main()
+  await prisma.$executeRawUnsafe(raw);
+};
+
+seedRoles()
   .then(async () => {
     await prisma.$disconnect();
   })
