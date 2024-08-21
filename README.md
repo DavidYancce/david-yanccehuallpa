@@ -39,3 +39,28 @@ Se tienen los siguientes endpoints:
 	Devuelve la data del cliente asociado al token.
 
 	![imagen](https://i.ibb.co/2kRZrdy/imagen-2024-08-20-112147562.png)
+
+4. [POST] http://localhost:3000/pedidos
+
+	Crea un nuevo pedido en la aplicación. Es necesario especificar el ID del vendedor, el estado inicial del pedido y los productos asociados.
+
+	```json
+	{
+		"vendedorId": 1,
+		"estadoId": 1,
+		"productos": [
+			{ "productoId": 1, "cantidad": 2 },
+			{ "productoId": 2, "cantidad": 1 }
+		]
+	}
+	```
+
+5. [PATCH] http://localhost:3000/pedidos/:id/estado
+
+	Cambia el estado de un pedido existente. El ID del pedido se pasa como parámetro en la URL y el nuevo estado se especifica en el cuerpo de la solicitud.
+
+	```json
+	{
+		"nuevoEstadoId": 2
+	}
+	```
